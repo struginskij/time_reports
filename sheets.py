@@ -1,5 +1,7 @@
 import gspread
+import sys
 from oauth2client.service_account import ServiceAccountCredentials
+
 
 scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
 
@@ -7,13 +9,19 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name("credentials.json
 
 client = gspread.authorize(credentials)
 
-# You have to change this name to your sheet name
-sheet = client.open("your_sheet_name").sheet1
+try:
+    sheet = client.open(sys.argv[1]).sheet1
+except (gspread.SpreadsheetNotFound, IndexError):
+    print("Spreadsheet not found")
+    sys.exit()
 
-tags = sheet.col_values(13)
-
-tags.remove('Tags')
-unique_tags = list(dict.fromkeys(tags))
+try:
+    tags = sheet.col_values(13)
+    tags.remove('Tags')
+    unique_tags = list(dict.fromkeys(tags))
+except ValueError:
+    print("Your spreadsheet cannot be modified and should contain original columns from toggle reports.")
+    sys.exit()
 
 
 START_INDEX = 7

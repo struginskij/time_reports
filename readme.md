@@ -15,7 +15,7 @@
 
 # Usage
 12. In sheet.py change name to name of your sheet in sheet variable
-13. Enable sheets.py script
+13. Enable sheets.py script with your sheet name e.g. python sheets.py example_sheet
 
 # Additional notes
 1. Remember, you have to set format type of two columns in your sheet: <br>

@@ -10,10 +10,54 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name("credentials.json
 client = gspread.authorize(credentials)
 
 try:
-    sheet = client.open(sys.argv[1]).sheet1
+    spreadsheet = client.open(sys.argv[1])
+    sheet = spreadsheet.sheet1
 except (gspread.SpreadsheetNotFound, IndexError):
     print("Spreadsheet not found")
     sys.exit()
+
+requests = [
+    {
+        "repeatCell": {
+            "range": {
+                "startColumnIndex": 11,
+                "endColumnIndex": 12,
+                "sheetId": sheet._properties['sheetId']
+            },
+            "cell": {
+                "userEnteredFormat": {
+                    "numberFormat": {
+                        "type": "TIME",
+                        "pattern": "[h]:mm:ss"
+                    }
+                }
+            },
+            "fields": "userEnteredFormat.numberFormat"
+        },
+    },
+    {
+        "repeatCell": {
+            "range": {
+                "startColumnIndex": 15,
+                "endColumnIndex": 16,
+                "sheetId": sheet._properties['sheetId']
+            },
+            "cell": {
+                "userEnteredFormat": {
+                    "numberFormat": {
+                        "type": "TIME",
+                        "pattern": "[h]:mm:ss"
+                    }
+                }
+            },
+            "fields": "userEnteredFormat.numberFormat"
+        }
+    }
+]
+body = {
+    'requests': requests
+}
+res = spreadsheet.batch_update(body)
 
 try:
     tags = sheet.col_values(13)
